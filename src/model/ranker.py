@@ -16,3 +16,6 @@ class DocumentRanker(nn.Module):
         out = out[:,0]
         outputs = self.fc(out)
         return outputs
+    
+    def predict(self):
+        pass

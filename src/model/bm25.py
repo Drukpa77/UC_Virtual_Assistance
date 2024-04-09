@@ -3,7 +3,7 @@ from gensim.models import TfidfModel
 from gensim.similarities import SparseMatrixSimilarity
 import numpy as np
 
-class BM25Gensim:
+class BM25:
     def __init__(self, checkpoint_path):
         self.dictionary = Dictionary.load(checkpoint_path + "/dict")
         self.tfidf_model = SparseMatrixSimilarity.load(checkpoint_path + "/tfidf")

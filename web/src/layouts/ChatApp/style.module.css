@@ -1,0 +1,38 @@
+.input {
+  position: -webkit-sticky;
+  position: sticky;
+  bottom: 0;
+  width: 100%;
+  
+}
+
+.container {
+  padding: 14px;
+  width: 100%;
+  height: 100vh;
+  position: relative;
+}
+
+.chat-area {
+  height: 81%;
+}
+
+.chat-bar {
+
+}
+
+.chat-input {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.chat-input > div {
+  font-size: 12px;
+  margin-top: 6px;
+}
+
+.chat-form {
+  width: 100%;
+}

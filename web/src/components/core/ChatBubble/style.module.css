@@ -1,0 +1,9 @@
+.bubble {
+  top: auto;
+  left: auto;
+  right: 20px;
+  bottom: 20px;
+  margin: 0;
+  z-index: 100;
+  position: fixed;
+}

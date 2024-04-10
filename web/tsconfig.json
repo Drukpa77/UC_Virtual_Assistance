@@ -24,6 +24,8 @@
       "@/layouts/*": ["./src/layouts/*"],
       "@/utils/*": ["./src/utils/*"],
       "@/hooks/*": ["./src/hooks/*"],
+      "@/reducers/*": ["./src/reducers/*"],
+      "@/contexts/*": ["./src/contexts/*"],
     }
   },
   "include": ["src"],

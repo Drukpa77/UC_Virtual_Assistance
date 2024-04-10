@@ -36,3 +36,18 @@
 .chat-form {
   width: 100%;
 }
+
+.submit-button {
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+
+.feedback-icon {
+  font-size: 16px;
+}
+
+.feedback-icon-right {
+  margin-left: 10px;
+}

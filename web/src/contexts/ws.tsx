@@ -1,4 +1,5 @@
 import { roomSlice } from '@/reducers/room';
+import { MESSAGE_BOT } from '@/reducers/types';
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import useWebSocket from 'react-use-websocket';
@@ -33,7 +34,7 @@ export default ({ children, host }: Props) => {
 
         switch(data.type) {
           case "room:message":
-            dispatch(roomSlice.actions.updateMessage(data.params));
+            dispatch(roomSlice.actions.updateMessage({message: data.params.payload.message, user: MESSAGE_BOT}));
             break;
         }
     }

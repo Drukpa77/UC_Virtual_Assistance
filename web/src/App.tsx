@@ -8,7 +8,7 @@ import store from './store'
 function App() {
   return (
     <Provider store={store}>
-      <WebsocketProvider host="ws://localhost:8000/10">
+      <WebsocketProvider host="ws://localhost:8000/ws/10">
         <ChatApp/>
         <ChatBubble/>
       </WebsocketProvider>

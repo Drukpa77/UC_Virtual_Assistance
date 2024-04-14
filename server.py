@@ -4,6 +4,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from src.model import BM25
 from src.config import TrainerConfig
 import os
+import json
+from typing import TypedDict
+
+class MessageParams(TypedDict):
+    value: str
+
+class MessagePacket(TypedDict):
+    type: str
+    params: MessageParams
 
 trainer_config = TrainerConfig()
 # set hugging face cache
@@ -42,8 +51,12 @@ async def websocket_endpoint(websocket: WebSocket, client_id:str):
     await manager.connect(websocket)
     try:
         while True:
-            data = await websocket.receive_text()
-            await manager.send_personal_message(f"You wrote: {data}", websocket)
+            packet_data = await websocket.receive_text()
+            packet_data = json.loads(packet_data)
+            if packet_data["type"] == "message:send":
+                resp = {"type": "room:message", "params": {"payload": {"message": "hi"}}}
+                await manager.send_personal_message(json.dumps(resp), websocket)
+                #await manager.send_personal_message(f"You wrote: {data}", websocket)
     
     except Exception as e:
         print(f"Error: {e}")

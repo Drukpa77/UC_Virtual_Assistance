@@ -1,8 +1,16 @@
 from fastapi import FastAPI, WebSocket
 from typing import List
 from fastapi.middleware.cors import CORSMiddleware
+from src.model import BM25
+from src.config import TrainerConfig
+import os
+
+trainer_config = TrainerConfig()
+# set hugging face cache
+os.environ['HF_HOME'] = trainer_config.cache_dir
 
 app = FastAPI()
+bm25_model = BM25("./outputs/bm25")
 
 class ConnectionManager:
     def __init__(self):
@@ -36,7 +44,6 @@ async def websocket_endpoint(websocket: WebSocket, client_id:str):
         while True:
             data = await websocket.receive_text()
             await manager.send_personal_message(f"You wrote: {data}", websocket)
-            await manager.broadcast(f"Client #{client_id} says: {data}")
     
     except Exception as e:
         print(f"Error: {e}")

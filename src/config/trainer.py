@@ -6,6 +6,7 @@ class TrainerConfig:
         self.train_batch_size = 4
         self.valid_batch_size = 32
         self.learning_rate = 3e-5
+        self.cache_dir = "./hf_cache"
 
     def load_config(self) -> None:
         pass

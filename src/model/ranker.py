@@ -1,11 +1,12 @@
 import torch.nn as nn
 from transformers import AutoModel, AutoConfig
+from src.config import TrainerConfig
 
 class DocumentRanker(nn.Module):
-    def __init__(self, model_name):
+    def __init__(self, model_name: str, config: TrainerConfig):
         super(DocumentRanker, self).__init__()
-        self.model = AutoModel.from_pretrained(model_name)
-        self.config = AutoConfig.from_pretrained(model_name)
+        self.model = AutoModel.from_pretrained(model_name, cache_dir=config.cache_dir)
+        self.config = AutoConfig.from_pretrained(model_name, cache_dir=config.cache_dir)
         self.drop = nn.Dropout(p=0.2)
         self.fc = nn.Linear(768, 1)
 

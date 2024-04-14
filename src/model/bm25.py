@@ -4,7 +4,7 @@ from gensim.similarities import SparseMatrixSimilarity
 import numpy as np
 
 class BM25:
-    def __init__(self, checkpoint_path):
+    def __init__(self, checkpoint_path: str):
         self.dictionary = Dictionary.load(checkpoint_path + "/dict")
         self.tfidf_model = SparseMatrixSimilarity.load(checkpoint_path + "/tfidf")
         self.bm25_index = TfidfModel.load(checkpoint_path + "/bm25_index")

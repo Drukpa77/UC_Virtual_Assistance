@@ -8,7 +8,7 @@ import ThumbsDownIcon from '@/components/icons/ThumbsDownIcon';
 import Box from '@/components/ui/Box';
 import AccountIcon from '@/components/icons/AccountIcon';
 import RobotIcon from '@/components/icons/RobotIcon';
-import { ChangeEvent, FormEvent, useContext, useState } from 'react';
+import { ChangeEvent, FormEvent, useContext, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { WebSocketContext } from '@/contexts/ws';
 import styles from './style.module.css';
@@ -16,10 +16,19 @@ import { RoomMessage, roomSlice } from '@/reducers/room';
 import { MESSAGE_BOT, MESSAGE_HUMAN } from '@/reducers/types';
 
 export default function ChatApp() {
+  const messagesEndRef = useRef<null | HTMLDivElement>(null)
   const ws = useContext(WebSocketContext);
   const roomMessages: RoomMessage[] = useSelector((state) => state.room.messages);
   const [message, setMessage] = useState<string>("");
   const dispatch = useDispatch();
+
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }
+  useEffect(() => {
+    scrollToBottom()
+  }, [roomMessages]);
 
   const handleSendMessage = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -58,7 +67,9 @@ export default function ChatApp() {
               </>}
             </Row>
           )}
+       <div ref={messagesEndRef} />
       </div>
+     
       <div className={styles['chat-input']}>
         <form className={styles['chat-form']} onSubmit={handleSendMessage}>
           <Box className={styles['input-container']}>
@@ -67,8 +78,8 @@ export default function ChatApp() {
               <ArrowUp/>
             </button>
           </Box>
-          
-          
+
+
         </form>
         <div>UC Bot can make mistakes, consider checking information</div>
       </div>

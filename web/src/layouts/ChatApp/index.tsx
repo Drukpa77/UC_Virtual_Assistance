@@ -67,7 +67,7 @@ export default function ChatApp() {
               </>}
             </Row>
           )}
-       <div ref={messagesEndRef} />
+       <div ref={messagesEndRef} className={styles['chat-break']} />
       </div>
      
       <div className={styles['chat-input']}>

@@ -70,3 +70,7 @@
 .chat-break {
   height: 30px;
 }
+
+.message-container {
+  width: 100%;
+}

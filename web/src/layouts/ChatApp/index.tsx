@@ -14,6 +14,7 @@ import { WebSocketContext } from '@/contexts/ws';
 import styles from './style.module.css';
 import { RoomMessage, roomSlice } from '@/reducers/room';
 import { MESSAGE_BOT, MESSAGE_HUMAN } from '@/reducers/types';
+import Markdown from 'react-markdown'
 
 export default function ChatApp() {
   const messagesEndRef = useRef<null | HTMLDivElement>(null)
@@ -48,9 +49,9 @@ export default function ChatApp() {
               {value.user === MESSAGE_BOT ? 
                 <>
                   <RobotIcon className={styles['user-icon']}/>
-                  <Box>
+                  <Box className={styles['message-container']}>
                     <Box pl={3}><b>Bot</b></Box>
-                    <ChatMessage message={value.message}/>
+                    <ChatMessage message={<Markdown>{`${value.message}`}</Markdown>}/>
                     <Row pl={3}>
                       <ThumbsUpIcon className={styles['feedback-icon']}/>
                       <ThumbsDownIcon className={`${styles['feedback-icon']} ${styles['feedback-icon-right']}`}/>
@@ -60,7 +61,7 @@ export default function ChatApp() {
               : 
               <>
                 <AccountIcon className={styles['user-icon']}/>
-                <Box>
+                <Box className={styles['message-container']}>
                   <Box pl={3}><b>User</b></Box>
                   <ChatMessage message={value.message}/>
                 </Box>

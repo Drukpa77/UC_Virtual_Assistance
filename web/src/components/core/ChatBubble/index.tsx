@@ -1,5 +1,6 @@
 import Fab from "@/components/ui/Fab";
 import HideOnScroll from "@/components/utils/HideOnScroll";
+import RobotIcon from "@/components/icons/RobotIcon";
 import styles from './style.module.css';
 
 export default function ChatBubble() {
@@ -7,7 +8,7 @@ export default function ChatBubble() {
     <>
       <HideOnScroll direction='right'>
         <Fab className={styles['bubble']}>
-          <div>h</div>
+          <RobotIcon/>
         </Fab>
       </HideOnScroll>
     </>

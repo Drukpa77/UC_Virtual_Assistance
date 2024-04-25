@@ -2,10 +2,10 @@ from transformers import AutoModelForQuestionAnswering, pipeline
 from typing import Union
 
 class QAModel:
-    def __init__(self, model_name: str):
+    def __init__(self, model_name: str, threshold: float):
         self.model = AutoModelForQuestionAnswering.from_pretrained(model_name)
         self.nlp = pipeline('question-answering', model=self.model, tokenizer=model_name)
-        self.threshold = 8
+        self.threshold = threshold
 
     def predict(self, question, texts, ranking_scores) -> Union[None, str]:
         answers = []
@@ -13,7 +13,7 @@ class QAModel:
         answer = ""
         for text, score in zip(texts, ranking_scores):
             res = self.nlp(question=question, context=text)
-            if res["score"] > self.thr:
+            if res["score"] > self.threshold:
                 answers.append(text)
             res["score"] = res["score"] * score
             if res["score"] > best_score:

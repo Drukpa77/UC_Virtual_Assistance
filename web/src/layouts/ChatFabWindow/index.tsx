@@ -1,29 +1,33 @@
-import Input from '@/components/ui/Input';
-import ChatMessage from '@/components/core/ChatMessage';
-import ChatAppBar from '../ChatAppBar';
-import ArrowUp from '@/components/icons/ArrowUp';
+import Markdown from 'react-markdown';
 import Row from '@/components/ui/Row';
-import ThumbsUpIcon from '@/components/icons/ThumbsUpIcon';
-import ThumbsDownIcon from '@/components/icons/ThumbsDownIcon';
-import Box from '@/components/ui/Box';
-import AccountIcon from '@/components/icons/AccountIcon';
 import RobotIcon from '@/components/icons/RobotIcon';
+import Box from '@/components/ui/Box';
+import ChatMessage from '@/components/core/ChatMessage';
 import { ChangeEvent, FormEvent, useContext, useEffect, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import classes from '@/utils/classes';
+import CloseIcon from '@/components/icons/CloseIcon';
+import Input from '@/components/ui/Input';
+import ArrowUp from '@/components/icons/ArrowUp';
 import { WebSocketContext } from '@/contexts/ws';
-import styles from './style.module.css';
+import { useDispatch, useSelector } from 'react-redux';
 import { RoomMessage, roomSlice } from '@/reducers/room';
 import { MESSAGE_BOT, MESSAGE_HUMAN } from '@/reducers/types';
-import Markdown from 'react-markdown'
 import { formatMDLinks } from '@/utils/markdown/strings';
+import ThumbsUpIcon from '@/components/icons/ThumbsUpIcon';
+import ThumbsDownIcon from '@/components/icons/ThumbsDownIcon';
+import AccountIcon from '@/components/icons/AccountIcon';
+import { FabWindowProps } from './types';
+import styles from './style.module.css';
 
-export default function ChatApp() {
+export default function ChatFabWindow({onClose, ...props}: FabWindowProps) {
+  const {className} = {...props}
+  const classNames = classes(styles['window'], className);
+
   const messagesEndRef = useRef<null | HTMLDivElement>(null)
   const ws = useContext(WebSocketContext);
   const roomMessages: RoomMessage[] = useSelector((state) => state.room.messages);
   const [message, setMessage] = useState<string>("");
   const dispatch = useDispatch();
-
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -40,12 +44,12 @@ export default function ChatApp() {
   }
 
   return (
-    <div className={styles.container}>
-      <div className={styles['chat-bar']}>
-        <ChatAppBar/>
-      </div>
-      <div className={styles['chat-area']}>
-        <Row  mb={2}>
+    <div className={classNames}>
+      <Row justify='flex-end' className={styles['toolbox']}>
+        <CloseIcon onClick={onClose}/>
+      </Row>
+      <Box className={styles['container']}>
+        <Row mb={2}>
           <RobotIcon className={styles['user-icon']}/>
           <Box className={styles['message-container']}>
             <Box pl={3}><b>InfoOracle</b></Box>
@@ -76,13 +80,13 @@ export default function ChatApp() {
             </>}
           </Row>
         )}
-       <div ref={messagesEndRef} className={styles['chat-break']} />
-      </div>
-     
+      <div ref={messagesEndRef} className={styles['chat-break']} />
+      </Box>
+
       <div className={styles['chat-input']}>
         <form className={styles['chat-form']} onSubmit={handleSendMessage}>
           <Box className={styles['input-container']}>
-            <Input className={styles.input} placeholder='type your message' value={message} onChange={(e: ChangeEvent<HTMLInputElement>) => setMessage(e.target.value)}/>
+            <Input className={styles.input} placeholder='type your message' value={message} onChange={(e: ChangeEvent<HTMLInputElement>) => setMessage(e.target.value)} />
             <button type="submit" className={styles['submit-button']}>
               <ArrowUp/>
             </button>
@@ -90,9 +94,8 @@ export default function ChatApp() {
 
 
         </form>
-        <div>InfoOracle can make mistakes, consider checking information</div>
+        <div className={styles['footer']}>InfoOracle can make mistakes, consider checking information</div>
       </div>
-      
     </div>
   )
 }

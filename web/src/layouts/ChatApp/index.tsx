@@ -15,6 +15,7 @@ import styles from './style.module.css';
 import { RoomMessage, roomSlice } from '@/reducers/room';
 import { MESSAGE_BOT, MESSAGE_HUMAN } from '@/reducers/types';
 import Markdown from 'react-markdown'
+import { formatMDLinks } from '@/utils/markdown/strings';
 
 export default function ChatApp() {
   const messagesEndRef = useRef<null | HTMLDivElement>(null)
@@ -44,14 +45,21 @@ export default function ChatApp() {
         <ChatAppBar/>
       </div>
       <div className={styles['chat-area']}>
+      <Row  mb={2}>
+        <RobotIcon className={styles['user-icon']}/>
+        <Box className={styles['message-container']}>
+          <Box pl={3}><b>InfoOracle</b></Box>
+          <ChatMessage message={<Markdown>{`My name is **InfoOracle**, how can I help you today?`}</Markdown>}/>
+        </Box>
+      </Row>
           {roomMessages.map((value, index) =>
             <Row key={index} mb={2}>
               {value.user === MESSAGE_BOT ? 
                 <>
                   <RobotIcon className={styles['user-icon']}/>
                   <Box className={styles['message-container']}>
-                    <Box pl={3}><b>Bot</b></Box>
-                    <ChatMessage message={<Markdown>{`${value.message}`}</Markdown>}/>
+                    <Box pl={3}><b>InfoOracle</b></Box>
+                    <ChatMessage message={<Markdown>{`${formatMDLinks(value.message)}`}</Markdown>}/>
                     <Row pl={3}>
                       <ThumbsUpIcon className={styles['feedback-icon']}/>
                       <ThumbsDownIcon className={`${styles['feedback-icon']} ${styles['feedback-icon-right']}`}/>
@@ -82,7 +90,7 @@ export default function ChatApp() {
 
 
         </form>
-        <div>UC Bot can make mistakes, consider checking information</div>
+        <div>InfoOracle can make mistakes, consider checking information</div>
       </div>
       
     </div>

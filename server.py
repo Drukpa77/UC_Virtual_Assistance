@@ -63,7 +63,16 @@ def rank_document(question: str):
     best_idxs = np.argsort(ranking_scores)[-10:]
     ranking_scores = np.array(ranking_scores)[best_idxs]
     texts = np.array(texts)[best_idxs]
-    return texts[len(texts) - 1]
+
+    threshold = 9
+    if ranking_scores[len(texts) - 1] > threshold:
+        return texts[len(texts) - 1]
+    return """I'm sorry, I couldn't find an answer to your question. It's possible that I may not have enough information to help you with this specific query. Here are a few suggestions: \n
+- Try rephrasing your question in a different way to see if I can better understand what you're looking for. \n
+- You can also check our help section on our website for more information. \n
+- If you prefer, I can connect you with a human agent who may be able to assist you further. \n
+
+Thank you for reaching out! Please feel free to ask if you have any other questions or need assistance with anything else."""
 
 
 manager = ConnectionManager()

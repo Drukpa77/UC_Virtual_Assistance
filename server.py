@@ -34,6 +34,14 @@ ranker_model = DocumentRanker("bert-base-uncased", trainer_config)
 ranker_model.load_state_dict(torch.load("./outputs/ranker.bin", map_location=torch.device('cpu')))
 ranker_model.eval()
 
+
+DEFAULT_RESPONSE = """I'm sorry, I couldn't find an answer to your question. It's possible that I may not have enough information to help you with this specific query. Here are a few suggestions: \n
+- Try rephrasing your question in a different way to see if I can better understand what you're looking for. \n
+- You can also check our help section on our website for more information. \n
+- If you prefer, I can connect you with a human agent who may be able to assist you further. \n
+
+Thank you for reaching out! Please feel free to ask if you have any other questions or need assistance with anything else."""
+
 class ConnectionManager:
     def __init__(self):
         self.active_connection: List[WebSocket] = []
@@ -67,12 +75,7 @@ def rank_document(question: str):
     threshold = 9
     if ranking_scores[len(texts) - 1] > threshold:
         return texts[len(texts) - 1]
-    return """I'm sorry, I couldn't find an answer to your question. It's possible that I may not have enough information to help you with this specific query. Here are a few suggestions: \n
-- Try rephrasing your question in a different way to see if I can better understand what you're looking for. \n
-- You can also check our help section on our website for more information. \n
-- If you prefer, I can connect you with a human agent who may be able to assist you further. \n
-
-Thank you for reaching out! Please feel free to ask if you have any other questions or need assistance with anything else."""
+    return DEFAULT_RESPONSE
 
 
 manager = ConnectionManager()

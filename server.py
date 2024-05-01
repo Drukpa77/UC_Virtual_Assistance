@@ -2,7 +2,7 @@ from fastapi import FastAPI, WebSocket
 from typing import List
 from fastapi.middleware.cors import CORSMiddleware
 from src.model import BM25, DocumentRanker
-from src.config import TrainerConfig
+from src.config import TrainerConfig, EnvConfig
 from src.tokenizer import preprocess_text
 import os
 import json
@@ -13,6 +13,9 @@ import torch
 from transformers import AutoTokenizer
 import numpy as np
 import uuid
+from src.entity import Message
+from src.config import load_dotenv
+from src.cache import Cache
 
 
 class MessageParams(TypedDict):
@@ -22,18 +25,21 @@ class MessagePacket(TypedDict):
     type: str
     params: MessageParams
 
+load_dotenv(".env")
 trainer_config = TrainerConfig()
+env_config = EnvConfig()
+cache = Cache(env_config)
 # set hugging face cache
 os.environ['HF_HOME'] = trainer_config.cache_dir
 nltk.data.path.append(trainer_config.nltk_dir)
 
-tokenizer = AutoTokenizer.from_pretrained('bert-base-uncased', cache_dir=trainer_config.cache_dir)
+tokenizer = AutoTokenizer.from_pretrained(env_config.HF_MODEL, cache_dir=trainer_config.cache_dir)
 app = FastAPI()
-bm25_model = BM25("./outputs/bm25")
+bm25_model = BM25(env_config.bm25_model)
 
 df_windows = pd.read_csv("./data/data_cleaned.csv")
-ranker_model = DocumentRanker("bert-base-uncased", trainer_config)
-ranker_model.load_state_dict(torch.load("./outputs/ranker.bin", map_location=torch.device('cpu')))
+ranker_model = DocumentRanker(env_config.HF_MODEL, trainer_config)
+ranker_model.load_state_dict(torch.load(env_config.document_model, map_location=torch.device('cpu')))
 ranker_model.eval()
 
 
@@ -107,11 +113,30 @@ async def websocket_endpoint(websocket: WebSocket, client_id:str):
             packet_data = json.loads(packet_data)
             message = packet_data["params"]["value"]
             if packet_data["type"] == "message:send":
-                ans = rank_document(message)
+                # save message
+                record = Message()
+                record.session = connection.session
+                record.message = message
+                record.is_bot = False
+
+                record.save()
+
+                ans = cache.get(message)
+                if ans is None:
+                    # no cahce
+                    ans = rank_document(message)
+                    cache.set(message, ans)
+    
+                # save answer
+                record = Message()
+                record.session = connection.session
+                record.message = ans
+                record.is_bot = True
+
+                record.save()
                 
                 resp = {"type": "room:message", "params": {"payload": {"message": ans}}}
                 await manager.send_personal_message(json.dumps(resp), connection)
-                #await manager.send_personal_message(f"You wrote: {data}", websocket)
     
     except Exception as e:
         print(f"Error: {e}")

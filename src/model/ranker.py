@@ -6,6 +6,7 @@ from torch.utils.data import DataLoader
 import torch
 from src.model_utils import collate_fn
 from src.dataset import DocumentDataset
+from tqdm import tqdm
 
 class DocumentRanker(nn.Module):
     def __init__(self, model_name: str, config: TrainerConfig):
@@ -37,7 +38,7 @@ class DocumentRanker(nn.Module):
         preds = []
         with torch.no_grad():
             bar = enumerate(valid_loader)
-            for step, data in bar:
+            for step, data in tqdm(bar):
                 ids = data["ids"].to(self.device)
                 masks = data["masks"].to(self.device)
                 preds.append(torch.sigmoid(self(ids, masks)).view(-1))

@@ -25,6 +25,10 @@ class Text(BaseType):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
+class Boolean(BaseType):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
 class Datetime(BaseType):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

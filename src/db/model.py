@@ -1,5 +1,5 @@
 from src.db.manager import BaseManager
-from .types import Integer, Float, BaseType, String, Text
+from .types import Integer, Float, BaseType, String, Text, Boolean
 import inspect
 from .meta import MetaField
 from .connection import db_connect
@@ -41,6 +41,8 @@ class BaseModel(metaclass=MetaModel):
                 setattr(self, field_name, str(value))
             elif isinstance(field, Text):
                 setattr(self, field_name, str(value))
+            elif isinstance(field, Boolean):
+                setattr(self, field_name, bool(value))
             else:
                 setattr(self, field_name, value)
 

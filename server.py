@@ -12,6 +12,8 @@ import pandas as pd
 import torch
 from transformers import AutoTokenizer
 import numpy as np
+import uuid
+
 
 class MessageParams(TypedDict):
     value: str
@@ -42,23 +44,33 @@ DEFAULT_RESPONSE = """I'm sorry, I couldn't find an answer to your question. It'
 
 Thank you for reaching out! Please feel free to ask if you have any other questions or need assistance with anything else."""
 
+
+class Connection:
+    def __init__(self, connection: WebSocket):
+        self.connection = connection
+        self.session = uuid.uuid4()
+
+    async def send_message(self, message: str):
+        await self.connection.send_text(message)
+
 class ConnectionManager:
     def __init__(self):
-        self.active_connection: List[WebSocket] = []
+        self.active_connection: List[Connection] = []
 
-    async def connect(self, websocket: WebSocket):
-        await websocket.accept()
-        self.active_connection.append(websocket)
+    async def connect(self, connection: Connection):
+        await connection.connection.accept()
+        #await websocket.accept()
+        self.active_connection.append(connection)
 
-    def disconnect(self, websocket: WebSocket):
-        self.active_connection.remove(websocket)
+    def disconnect(self, connection: Connection):
+        self.active_connection.remove(connection)
 
-    async def send_personal_message(self, message: str, websocket: WebSocket):
-        await websocket.send_text(message)
+    async def send_personal_message(self, message: str, connection: Connection):
+        await connection.send_message(message)
 
     async def broadcast(self, message: str):
         for connection in self.active_connection:
-            await connection.send_text(message)
+            await connection.send_message(message)
 
 def rank_document(question: str):
     query = preprocess_text(question).lower()
@@ -86,7 +98,9 @@ async def get_root():
 
 @app.websocket("/ws/{client_id}")
 async def websocket_endpoint(websocket: WebSocket, client_id:str):
-    await manager.connect(websocket)
+    connection = Connection(websocket)
+    await manager.connect(connection)
+    
     try:
         while True:
             packet_data = await websocket.receive_text()
@@ -94,8 +108,9 @@ async def websocket_endpoint(websocket: WebSocket, client_id:str):
             message = packet_data["params"]["value"]
             if packet_data["type"] == "message:send":
                 ans = rank_document(message)
+                
                 resp = {"type": "room:message", "params": {"payload": {"message": ans}}}
-                await manager.send_personal_message(json.dumps(resp), websocket)
+                await manager.send_personal_message(json.dumps(resp), connection)
                 #await manager.send_personal_message(f"You wrote: {data}", websocket)
     
     except Exception as e:

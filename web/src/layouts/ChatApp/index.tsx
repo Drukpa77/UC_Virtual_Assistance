@@ -17,9 +17,10 @@ import { MESSAGE_BOT, MESSAGE_HUMAN } from '@/reducers/types';
 import Markdown from 'react-markdown'
 import { formatMDLinks } from '@/utils/markdown/strings';
 
-export default function ChatApp() {
+export default function ChatApp({loading}: {loading: boolean}) {
   const messagesEndRef = useRef<null | HTMLDivElement>(null)
   const ws = useContext(WebSocketContext);
+  //const [loading, setLoading] = useState<boolean>(false);
   const roomMessages: RoomMessage[] = useSelector((state) => state.room.messages);
   const [message, setMessage] = useState<string>("");
   const dispatch = useDispatch();
@@ -31,6 +32,7 @@ export default function ChatApp() {
   useEffect(() => {
     scrollToBottom()
   }, [roomMessages]);
+
 
   const handleSendMessage = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -76,6 +78,14 @@ export default function ChatApp() {
             </>}
           </Row>
         )}
+        {loading &&
+        <Row mb={2}> 
+          <RobotIcon className={styles['user-icon']}/>
+          <Box className={styles['message-container']}>
+            <Box pl={3}><b>InfoOracle</b></Box>
+            <ChatMessage message={"Thinking..."}/>
+          </Box>
+        </Row>}
        <div ref={messagesEndRef} className={styles['chat-break']} />
       </div>
      

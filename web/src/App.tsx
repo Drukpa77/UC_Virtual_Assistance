@@ -9,11 +9,12 @@ import ChatFabWindow from './layouts/ChatFabWindow'
 
 function App() {
   const [openFab, setOpenFab] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   return (
     <Provider store={store}>
-      <WebsocketProvider host="ws://localhost:8000/ws/10">
-        <ChatApp/>
+      <WebsocketProvider host="ws://localhost:8000/ws/10" setLoading={setLoading}>
+        <ChatApp loading={loading}/>
         <ChatBubble onClick={() => setOpenFab(true)}/>
 
         {openFab ? <ChatFabWindow onClose={() => setOpenFab(false)}/> : null}

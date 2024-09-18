@@ -13,9 +13,9 @@ import torch
 from transformers import AutoTokenizer
 import numpy as np
 import uuid
-from src.entity import Message
+#from src.entity import Message
 from src.config import load_dotenv
-from src.cache import Cache
+#from src.cache import Cache
 
 
 class MessageParams(TypedDict):
@@ -28,7 +28,7 @@ class MessagePacket(TypedDict):
 load_dotenv(".env")
 trainer_config = TrainerConfig()
 env_config = EnvConfig()
-cache = Cache(env_config)
+#cache = Cache(env_config)
 # set hugging face cache
 os.environ['HF_HOME'] = trainer_config.cache_dir
 nltk.data.path.append(trainer_config.nltk_dir)
@@ -38,7 +38,7 @@ app = FastAPI()
 bm25_model = BM25(env_config.bm25_model)
 
 df_windows = pd.read_csv("./data/data_cleaned.csv")
-ranker_model = DocumentRanker(env_config.HF_MODEL, trainer_config)
+ranker_model = DocumentRanker(env_config.HF_MODEL, trainer_config, tokenizer)
 ranker_model.load_state_dict(torch.load(env_config.document_model, map_location=torch.device('cpu')))
 ranker_model.eval()
 
@@ -113,6 +113,7 @@ async def websocket_endpoint(websocket: WebSocket, client_id:str):
             packet_data = json.loads(packet_data)
             message = packet_data["params"]["value"]
             if packet_data["type"] == "message:send":
+                """
                 # save message
                 record = Message()
                 record.session = connection.session
@@ -120,21 +121,25 @@ async def websocket_endpoint(websocket: WebSocket, client_id:str):
                 record.is_bot = False
 
                 record.save()
+                """
 
+                """
                 ans = cache.get(message)
                 if ans is None:
                     # no cahce
                     ans = rank_document(message)
                     cache.set(message, ans)
+                """
     
                 # save answer
+                """
                 record = Message()
                 record.session = connection.session
                 record.message = ans
                 record.is_bot = True
-
-                record.save()
                 
+                record.save()"""
+                ans = rank_document(message)
                 resp = {"type": "room:message", "params": {"payload": {"message": ans}}}
                 await manager.send_personal_message(json.dumps(resp), connection)
     
